@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      display: flex;
+      border: 2px solid #1e3a5f;
+      border-radius: 12px;
+      overflow: hidden;
+      background: white;
+      max-width: 1600px;
+      margin: auto;
+    }
+
+    .produits, .ticket {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .produits {
+      border-right: 1px solid #ccc;
+    }
+
+    .produits h2, .ticket h2 {
+      margin-top: 0;
+    }
+
+    .produit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .produit-btn {
+      background-color: #e0f2f1;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .produit-btn:hover {
+      background-color: #b2dfdb;
+    }
+
+    .img-produit {
+      width: 64px;
+      height: 64px;
+      border-radius: 6px;
+      object-fit: cover;
+      margin-bottom: 8px;
+    }
+
+    .quantite-btns {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .quantite-btn {
+      font-size: 14px;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      background-color: #c8e6c9;
+      cursor: pointer;
+    }
+
+    .quantite-btn:hover {
+      background-color: #a5d6a7;
+    }
+
+    .ticket-content {
+      background: #f0f0f0;
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 150px;
+    }
+
+    .ticket-line {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+    }
+
+    .total-final {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #2e7d32;
+    }
+
+    .actions {
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .btn-clear {
+      background-color: #e57373;
+      color: white;
+    }
+
+    .logo-container-right {
+      text-align: right;
+      margin-top: 20px;
+    }
+
+    .logo-container-right img {
+      max-width: 150px;
+      height: auto;
+    }
+  </style>
+</head>
+<script>
+  const ticket = [];
+  let remise = 0;
+
+  function ajouterProduit(nom, prix, quantiteAjoutee = 1) {
+    const produit = ticket.find(p => p.nom === nom);
+    if (produit) {
+      produit.quantite += quantiteAjoutee;
+    } else {
+      ticket.push({ nom, prix, quantite: quantiteAjoutee });
+    }
+    afficherTicket();
+  }
+
+  function afficherTicket() {
+    const container = document.getElementById('ticket-content');
+    const totalEl = document.getElementById('total');
+    const totalBrutEl = document.getElementById('total-brut');
+    const remiseEl = document.getElementById('remise-appliquee');
+
+    container.innerHTML = '';
+    let totalBrut = 0;
+
+    ticket.forEach(produit => {
+      const ligne = document.createElement('div');
+      ligne.className = 'ticket-line';
+      ligne.innerHTML = `
+        <span>${produit.nom} x${produit.quantite}</span>
+        <span>${(produit.prix * produit.quantite).toFixed(2)} $</span>
+      `;
+      container.appendChild(ligne);
+      totalBrut += produit.prix * produit.quantite;
+    });
+
+    const montantRemise = totalBrut * (remise / 100);
+    const totalFinal = totalBrut - montantRemise;
+
+    totalBrutEl.textContent = totalBrut.toFixed(2) + ' $';
+    remiseEl.textContent = `${remise} % (-${montantRemise.toFixed(2)} $)`;
+    totalEl.textContent = totalFinal.toFixed(2) + ' $';
+  }
+
+  function appliquerRemise(pourcentage) {
+    remise = pourcentage;
+    afficherTicket();
+  }
+
+  function annulerRemise() {
+    remise = 0;
+    afficherTicket();
+  }
+
+  function viderTicket() {
+    ticket.length = 0;
+    remise = 0;
+    afficherTicket();
+  }
+</script>
+
+<body>
+  <div class="container">
+    <div class="produits">
+      <div>
+        <h2>Produits</h2>
+        <div class="produit-grid">
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/SDS3hvrk/entrecote.png" class="img-produit" alt="Entrecôte BBQ">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Entrecôte BBQ', 130, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Entrecôte BBQ', 130, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Entrecôte BBQ', 130, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/0yXmNtxp/west-texas.png" class="img-produit" alt="West Texas">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('West Texas', 94, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('West Texas', 94, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('West Texas', 94, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/RkM92gky/Chat-GPT-Image-22-mai-2025-14-08-14.png" class="img-produit" alt="Ribs BBQ">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Ribs BBQ', 94, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Ribs BBQ', 94, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Ribs BBQ', 94, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/R8MsdJj/buffalo-wings.png" class="img-produit" alt="Buffalo Wings">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Buffalo Wings', 43, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Buffalo Wings', 43, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Buffalo Wings', 43, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/6JRqBxq8/Chat-GPT-Image-22-mai-2025-14-13-56.png" class="img-produit" alt="Patate au four">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Patate au four', 26, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Patate au four', 26, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Patate au four', 26, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/FLY9P43V/onoion-rings.png" class="img-produit" alt="Onion rings">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Onion rings', 21, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Onion rings', 21, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Onion rings', 21, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/dsDyjFYZ/Chat-GPT-Image-22-mai-2025-14-17-50.png" class="img-produit" alt="Milkshake">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Milkshake', 33, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Milkshake', 33, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Milkshake', 33, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/N26Krbxb/boisson.png" class="img-produit" alt="Soda">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Soda', 23, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Soda', 23, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Soda', 23, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/LyVrdYs/donuts.png" class="img-produit" alt="Donuts">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Donuts', 17, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Donuts', 17, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Donuts', 17, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/1J4sjdJP/hotdog.png" class="img-produit" alt="Hotdog">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Hotdog', 48, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Hotdog', 48, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Hotdog', 48, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/7dPJttsn/Chat-GPT-Image-22-mai-2025-14-42-58.png" class="img-produit" alt="Menu Trex L">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Menu Trex L', 100, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Menu Trex L', 100, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Menu Trex L', 100, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/bkGYt8K/Chat-GPT-Image-22-mai-2025-14-45-36.png" class="img-produit" alt="Menu Trex XL">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Menu Trex XL', 150, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Menu Trex XL', 150, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Menu Trex XL', 150, 10)">+10</button>
+            </div>
+          </div>
+          <div class="produit-btn">
+            <img src="https://i.ibb.co/dsnw9x2B/Chat-GPT-Image-22-mai-2025-14-24-20.png" class="img-produit" alt="Menu Trex tout puissant">
+            <div class="quantite-btns">
+              <button class="quantite-btn" onclick="ajouterProduit('Menu Trex tout puissant', 169, 1)">+1</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Menu Trex tout puissant', 169, 5)">+5</button>
+              <button class="quantite-btn" onclick="ajouterProduit('Menu Trex tout puissant', 169, 10)">+10</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ticket">
+      <h2>Ticket en cours</h2>
+      <div class="ticket-content" id="ticket-content"></div>
+      <div class="ticket-line"><strong>Total brut :</strong> <span id="total-brut">0,00 $</span></div>
+      <div class="ticket-line"><strong>Remise :</strong> <span id="remise-appliquee">0 % (-0,00 $)</span></div>
+      <div class="ticket-line total-final">
+        <span>Total final :</span>
+        <span id="total">0,00 $</span>
+      </div>
+
+      <h3>Réduction</h3>
+      <div class="quantite-btns" style="margin-bottom: 10px;">
+        <button class="quantite-btn" onclick="appliquerRemise(5)">-5%</button>
+        <button class="quantite-btn" onclick="appliquerRemise(10)">-10%</button>
+        <button class="quantite-btn" onclick="appliquerRemise(15)">-15%</button>
+        <button class="quantite-btn" onclick="appliquerRemise(20)">-20%</button>
+        <button class="quantite-btn" style="background-color: #ffcdd2;" onclick="annulerRemise()">Annuler remise</button>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-clear" onclick="viderTicket()">🗑️ Vider Ticket</button>
+      </div>
+
+      <div class="logo-container-right">
+        <img src="https://i.ibb.co/mjSwdxz/rexdiner-removebg-preview.png" alt="Rex Diner Logo">
+      </div>
+    </div>
+  </div>
+</body>
+</html>
