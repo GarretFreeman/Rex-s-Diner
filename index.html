@@ -332,3 +332,27 @@
   </div>
 </body>
 </html>
+
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu("Caisse enregistreuse by Garret Freeman")
+    .addItem("Ouvrir l'interface", "afficherInterface")
+    .addToUi();
+}
+
+function afficherInterface() {
+  const html = HtmlService.createHtmlOutputFromFile("interface")
+    .setWidth(1800)  // interface élargie
+    .setHeight(800);
+  SpreadsheetApp.getUi().showModalDialog(html, "Caisse enregistreuse by Garret FREEMAN");
+}
+
+function enregistrerTicket(ticket) {
+  const feuille = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Tickets");
+  const now = new Date();
+  const idTicket = Utilities.getUuid().slice(0, 8).toUpperCase(); // ID unique
+
+  ticket.forEach(p => {
+    feuille.appendRow([idTicket, now, p.nom, p.quantite, p.prix, p.quantite * p.prix]);
+  });
+}
